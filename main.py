@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-# from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import Response
 from starlette.requests import Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,6 +20,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.middleware("http")
 async def db_session_middleware(request: Request, call_next):
     response = Response("Error", status_code=500)
@@ -33,6 +33,3 @@ async def db_session_middleware(request: Request, call_next):
 
 
 app.include_router(router)
-# @app.get('/')
-# def home():
-#     return {"key": "Hello"}

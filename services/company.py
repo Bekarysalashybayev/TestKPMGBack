@@ -4,25 +4,18 @@ from models.company import Company
 from schemas.company import CompanyCreate
 
 
-def get_company_list(db: Session):
-    return db.query(Company).all()
+def get_company_values(db: Session, start_date, end_date):
+    sub_query = ''
+    if start_date != '':
+        sub_query = "where t1.date between '" + start_date + "' and '" + end_date + "'"
 
-
-def get_company_titles(db: Session, q):
-    q1 = text("select title from company")
-    return db.execute(q1).fetchall()
-
-
-def get_company_values(db: Session, q):
-    s = ''
-    if q != "":
-        s = "where  t1.date between " + q
-
-    q = text("select t1.title,t1. type1, t1.type2, sum(t1.total) as total"
-             " from (select title, type1, type2, date, sum(value) as total "
-             "from company group by title, type1, type2, date) AS t1  " + s +
-             " group by t1.title, t1.type1, t1.type2;")
-
+    q = text("select t1.title, sum(t1.fact_qliq) as fact_qliq_total, sum(t1.fact_qoil) as fact_qoil_total, "
+             "sum(t1.forecast_qliq) as forecast_qliq_total, sum(t1.forecast_qoil) as forecast_qoil_total "
+             "from(select title, date, (fact_qliq_data1 + fact_qliq_data2) as fact_qliq, "
+             "(fact_qoil_data1 + fact_qoil_data2) as fact_qoil, "
+             "(forecast_qliq_data1 + forecast_qliq_data2) as forecast_qliq, "
+             "(forecast_qoil_data1 + forecast_qoil_data2) as forecast_qoil from company) as t1 " + sub_query +
+             " group by t1.title;")
     return db.execute(q).fetchall()
 
 
