@@ -6,7 +6,7 @@ from schemas.company import CompanyCreate
 
 def get_company_values(db: Session, start_date, end_date):
     sub_query = ''
-    if start_date != '':
+    if start_date != '' and len(start_date) == 10:
         sub_query = "where t1.date between '" + start_date + "' and '" + end_date + "'"
 
     q = text("select t1.title, sum(t1.fact_qliq) as fact_qliq_total, sum(t1.fact_qoil) as fact_qoil_total, "
